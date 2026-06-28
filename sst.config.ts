@@ -1,17 +1,5 @@
 /// <reference path="./.sst/platform/config.d.ts" />
 
-import { readFileSync } from "fs";
-
-function detectFramework(): "nextjs" | "sveltekit" | "static" {
-  try {
-    const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
-    const deps = { ...pkg.dependencies, ...pkg.devDependencies };
-    if (deps["next"]) return "nextjs";
-    if (deps["@sveltejs/kit"]) return "sveltekit";
-  } catch {}
-  return "static";
-}
-
 export default $config({
   app(input) {
     return {
@@ -21,6 +9,18 @@ export default $config({
     };
   },
   async run() {
+    const { readFileSync } = await import("fs");
+
+    function detectFramework(): "nextjs" | "sveltekit" | "static" {
+      try {
+        const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
+        const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+        if (deps["next"]) return "nextjs";
+        if (deps["@sveltejs/kit"]) return "sveltekit";
+      } catch {}
+      return "static";
+    }
+
     const framework = detectFramework();
 
     if (framework === "nextjs") {
