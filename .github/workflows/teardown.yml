@@ -23,10 +23,18 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 22
 
-      - run: npm ci
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then npm ci
+          elif [ -f pnpm-lock.yaml ]; then npm install -g pnpm && pnpm install --frozen-lockfile
+          elif [ -f yarn.lock ]; then yarn install --frozen-lockfile
+          else echo "No lockfile found, skipping install"
+          fi
+
+      - name: Install SST providers
+        run: npx sst install
 
       - name: Destroy preview environment
         run: npx sst remove --stage pr-${{ github.event.pull_request.number }}
