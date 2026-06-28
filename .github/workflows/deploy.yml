@@ -37,7 +37,7 @@ jobs:
         run: npx sst install
 
       - name: Deploy preview environment
-        run: npx sst deploy --stage pr-${{ github.event.pull_request.number }}
+        run: npx sst deploy --stage pr-${{ github.event.pull_request.number }} --print-logs --verbose
         env:
           REPO_NAME: ${{ github.event.repository.name }}
 
