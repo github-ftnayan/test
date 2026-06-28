@@ -1,5 +1,8 @@
 {
   "name": "test",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p dist && echo '<h1>Hello from 0xCI preview!</h1>' > dist/index.html"
+  }
 }
