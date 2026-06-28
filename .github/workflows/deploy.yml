@@ -37,9 +37,24 @@ jobs:
         run: npx sst install
 
       - name: Deploy preview environment
-        run: npx sst deploy --stage pr-${{ github.event.pull_request.number }} --print-logs --verbose
+        run: |
+          npx sst deploy --stage pr-${{ github.event.pull_request.number }} 2>&1 | tee /tmp/sst-out.txt
+          cat /tmp/sst-out.txt
         env:
           REPO_NAME: ${{ github.event.repository.name }}
+
+      - name: Save SST outputs
+        run: |
+          mkdir -p .sst
+          # SST Ion prints outputs as "  key: value" lines at the end of deploy
+          URL=$(grep -oE 'https://[a-zA-Z0-9._-]+\.(cloudfront\.net|amazonaws\.com|on\.aws)[^ ]*' /tmp/sst-out.txt | tail -1)
+          if [ -n "$URL" ]; then
+            echo "{\"url\":\"$URL\"}" > .sst/output.json
+            echo "Captured URL: $URL"
+          else
+            echo "Warning: No deployment URL found in SST output"
+            ls -la .sst/ 2>/dev/null || echo ".sst directory not found"
+          fi
 
       - name: Upload SST outputs
         uses: actions/upload-artifact@v4
