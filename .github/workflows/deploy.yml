@@ -8,6 +8,11 @@ permissions:
   id-token: write
   contents: read
 
+# Cancel in-progress deploys on new pushes; teardown uses the same group with cancel-in-progress: false
+concurrency:
+  group: sst-${{ github.repository }}-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
