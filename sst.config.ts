@@ -5,7 +5,7 @@ export default $config({
     return {
       name: process.env.REPO_NAME ?? "app",
       home: "aws",
-      removal: input?.stage?.startsWith("pr-") ? "always" : "retain",
+      removal: input?.stage?.startsWith("pr-") ? "remove" : "retain",
     };
   },
   async run() {
