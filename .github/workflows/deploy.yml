@@ -33,6 +33,9 @@ jobs:
           else echo "No lockfile found, skipping install"
           fi
 
+      - name: Install SST providers
+        run: npx sst install
+
       - name: Deploy preview environment
         run: npx sst deploy --stage pr-${{ github.event.pull_request.number }} --outputs-file .sst/outputs.json
         env:
