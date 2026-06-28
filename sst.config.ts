@@ -23,17 +23,24 @@ export default $config({
 
     const framework = detectFramework();
 
+    let url: $util.Output<string>;
+
     if (framework === "nextjs") {
-      new sst.aws.Nextjs("App");
+      const site = new sst.aws.Nextjs("App");
+      url = site.url;
     } else if (framework === "sveltekit") {
-      new sst.aws.SvelteKit("App");
+      const site = new sst.aws.SvelteKit("App");
+      url = site.url;
     } else {
-      new sst.aws.StaticSite("App", {
+      const site = new sst.aws.StaticSite("App", {
         build: {
           command: "npm run build",
           output: "dist",
         },
       });
+      url = site.url;
     }
+
+    return { url };
   },
 });
