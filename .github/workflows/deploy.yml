@@ -1,0 +1,41 @@
+name: 0xCI Deploy
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
+          role-session-name: 0xci-pr-${{ github.event.pull_request.number }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Deploy preview environment
+        run: npx sst deploy --stage pr-${{ github.event.pull_request.number }} --outputs-file .sst/outputs.json
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+
+      - name: Upload SST outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: sst-outputs
+          path: .sst/outputs.json
+          if-no-files-found: warn
