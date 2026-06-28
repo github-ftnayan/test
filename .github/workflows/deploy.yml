@@ -37,7 +37,7 @@ jobs:
         run: npx sst install
 
       - name: Deploy preview environment
-        run: npx sst deploy --stage pr-${{ github.event.pull_request.number }} --outputs-file .sst/outputs.json
+        run: npx sst deploy --stage pr-${{ github.event.pull_request.number }}
         env:
           REPO_NAME: ${{ github.event.repository.name }}
 
@@ -45,5 +45,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sst-outputs
-          path: .sst/outputs.json
+          path: .sst/output.json
           if-no-files-found: warn
